@@ -1,0 +1,26 @@
+# Secrets — NEVER commit
+.env
+.env.local
+*.env
+credentials.json
+token_*.json
+gmail_accounts.json
+*.key
+*.pem
+
+# Intermediate output
+.tmp/
+*.log
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Editor
+.vscode/
+.idea/
+*.swp
