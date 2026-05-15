@@ -169,7 +169,7 @@ Concretely for 7b:
 Tool call shape (get recipient from the trigger prompt's `RESEND_TO` — the sandbox has no env vars):
 ```
 mcp__claude_ai_Gmail__create_draft:
-  to: ["xingjian.zh@gmail.com"]
+  to: ["user@example.com"]
   subject: "Newsletter Digest — YYYY-MM-DD (N newsletters)"
   htmlBody: "<!DOCTYPE html><html>...full digest HTML inline here..."
   body: "Daily newsletter digest — open in HTML view for the full table."
@@ -197,6 +197,39 @@ An HTML email delivered to your inbox with columns:
 ## Gmail Forum Tab
 No filter setup needed. Gmail's Forum tab automatically categorizes mailing lists and newsletters.
 The MCP search uses `category:forums newer_than:1d` to query this tab directly.
+
+## Optional Configuration: Auto-Approve Resend API Calls
+
+By default, the Resend API `curl` command (Step 7a) requires user confirmation before running. To eliminate this prompt and run hands-free, add a permission hook to `.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "PermissionRequest": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if jq -e '.tool_input.command | contains(\"api.resend.com\")' > /dev/null 2>&1; then echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PermissionRequest\", \"permissionDecision\": \"allow\"}}'; else exit 1; fi"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**How it works:**
+- Intercepts all permission requests on Bash commands
+- Checks if the command targets `api.resend.com` (the Resend endpoint)
+- Auto-allows Resend API calls; all other Bash commands require normal approval
+
+**When to use:** If you run the digest frequently and trust the Resend integration, this eliminates one approval step per run.
+
+**When to skip:** If you prefer explicit confirmation on all external API calls for audit/control purposes, omit this hook — the workflow works identically without it.
+
+Merge this JSON with any existing `hooks` in your settings file. See Claude Code's settings.json schema for [hook documentation](https://claude.ai/docs/settings/hooks).
 
 ## Performance
 - Fetch (MCP): ~5–15s depending on email count

@@ -139,7 +139,20 @@ Values you need:
 - `RESEND_FROM` — `onboarding@resend.dev` works immediately for testing. For a branded sender, verify a domain at resend.com/domains.
 - `RESEND_TO` — where the digest lands (usually your own inbox).
 
-### 4. Run it
+### 4. (Optional) Configure auto-approval for Resend API calls
+
+By default, the Resend API `curl` command requires your approval before sending. To skip this prompt:
+
+```bash
+# Copy the settings example
+cp .claude/settings.json.example /path/to/your/workspace/.claude/settings.json
+```
+
+This adds a permission hook that auto-approves any Bash command targeting `api.resend.com` (the Resend endpoint), while leaving other Bash commands under normal permission controls.
+
+**Skip this step if:** You prefer explicit confirmation on all API calls, or you want to review each send before it goes out.
+
+### 5. Run it
 
 In Claude Code, type:
 
@@ -147,7 +160,7 @@ In Claude Code, type:
 /newsletter-digest
 ```
 
-On the first run, Claude will ask for permission for each tool (Gmail MCP reads, Bash `curl`, etc.). Approve, and the digest lands in your `RESEND_TO` inbox in ~30 seconds.
+On the first run, Claude will ask for permission for each tool (Gmail MCP reads, Bash `curl` if the hook isn't configured, etc.). Approve, and the digest lands in your `RESEND_TO` inbox in ~30 seconds.
 
 ---
 
