@@ -18,9 +18,9 @@ A 5-column table, one row per newsletter:
 
 | Sender | Summary | Key Statistics | 🔗 | ✉️ |
 |--------|---------|----------------|----|----|
-| SemiAnalysis | 📊 **Research:** GPU Cluster TCO — gold-tier is 5–15% cheaper than silver-tier on training; gap vanishes on inference | 8 stats incl. "Goodput expense 6.14% / 10.53% / 20.91%" | 🔗 | ✉️ |
-| The Information | 📰 **News:** OpenAI image model, Meta layoffs, Anthropic $800B valuation interest... | 15 figures cited | 🔗 | ✉️ |
-| Noahpinion | 💬 **Argument:** "Industrial policy" is too broad a category — FDI differs fundamentally from subsidies | — | 🔗 | ✉️ |
+| **Ilya Strebulaev** | 📊 **Research:** Global VC AUM grew 7x ($500B→$3.5T since 2008), but capital recycling is stalling — 1,920 unicorns remain private for 15+ years and LP distributions are at historic lows. AI captured 50%+ of deal value in 2025 while demanding industrial-scale infrastructure. | • 1,920 unicorns privately held for 15+ years<br/>• AI captured 50%+ of VC deal value 2025<br/>• 81% of unicorns in N. America (48%) + Asia (33%)<br/>• Europe accounts for only 13% | 🔗 [read](https://ilyastrebulaev.substack.com/p/the-future-of-venture-capital-unlocking) | ✉️ |
+| **AI Valley** | 🏭 **Industry Update:** Google Gemini Spark (leaked: persistent background agent + location access). Xynova Flex 2 robotic hand targets fine manipulation bottleneck. OpenAI considering legal action over Siri integration. Apple planning iOS 27 Siri with Claude + Gemini — multi-provider strategy avoiding lock-in. | • Xynova Flex 2: 23 degrees of freedom<br/>• Google Spark: persistent cross-site agent<br/>• Apple multi-AI provider strategy | 🔗 [read](https://www.theaivalley.com/p/gemini-s-spark-agent-has-leaked) | ✉️ |
+| **a16z** | 📊 **Research:** Memory supercycle — DDR5 contract prices tripled YoY; NAND doubled. Samsung/SK Hynix/Micron expected to sextuple 2026 operating income; consumer prices up 10–20%. AI productivity inflecting: Affirm doubled PRs (2/3 agentic code) but only 1-in-5 firms use agents yet — most gains ahead. | • DRAM prices up 3x YoY<br/>• NAND prices up 2x YoY<br/>• Micron Q1 earnings exceeded any prior full year<br/>• Affirm PRs doubled; 67% agentic code<br/>• Only 1-in-5 firms using AI agents | 🔗 [read](https://www.a16z.news/p/charts-of-the-week-memory-to-the) | ✉️ |
 
 The 🔗 column jumps to the article's web version; the ✉️ column opens the message in Gmail.
 
@@ -52,10 +52,8 @@ flowchart TB
 
     Results -->|"5. build_digest.py"| Build["HTML digest<br/>(table, inline styles)"]
 
-    Build -->|"6a. local: curl POST"| Resend["Resend API"]
-    Build -->|"6b. cloud: MCP create_draft"| Gmail
+    Build -->|"curl POST"| Resend["Resend API"]
     Resend --> Inbox["📬 Your inbox"]
-    Gmail -.->|"draft appears in<br/>Gmail Drafts"| Inbox
 
     classDef parent fill:#1a73e8,stroke:#1a73e8,color:#fff
     classDef subagent fill:#e8f0fe,stroke:#1a73e8,color:#202124
@@ -161,19 +159,6 @@ In Claude Code, type:
 ```
 
 On the first run, Claude will ask for permission for each tool (Gmail MCP reads, Bash `curl` if the hook isn't configured, etc.). Approve, and the digest lands in your `RESEND_TO` inbox in ~30 seconds.
-
----
-
-## Setup — Scheduled cloud trigger
-
-The Anthropic scheduled-trigger environment has no `.env` file and blocks `api.resend.com`. In that environment the skill auto-selects the Gmail-draft path.
-
-1. Create a scheduled trigger at claude.ai/code/scheduled.
-2. Attach the Gmail MCP connector to it.
-3. Point the trigger at this repo (`sources` → `github.com/xj-2045/claude-newsletter-digest.v2`).
-4. In the trigger prompt, invoke `/newsletter-digest`.
-
-The skill detects the missing `.env` and routes output through `mcp__claude_ai_Gmail__create_draft`. Your digest shows up in Gmail Drafts ready to hit Send (or to forward elsewhere).
 
 ---
 
